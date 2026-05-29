@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Tasks template for modernization plan. Generate this file alongside plan.md to track individual migration tasks.",
+  "tasks": [
+    {
+      "type": "transform",
+      "id": "001-transform-credentials-to-keyvault",
+      "description": "Migrate plaintext credentials in the KYC service to Azure Key Vault.",
+      "reason": "Hardcoded credentials are present and should be replaced with centralized secret management.",
+      "requirements": "Migrate hardcoded credentials from application properties to Azure Key Vault-based retrieval using managed identity. Addresses issues: CWE-259: Use of Hard-coded Password, CWE-798: Use of Hard-coded Credentials.",
+      "skills": [
+        {
+          "name": "migration-plaintext-credential-to-azure-keyvault",
+          "location": "builtin"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "security",
+      "id": "002-security-cve-remediation",
+      "description": "Scan dependencies for CVEs and remediate identified vulnerabilities.",
+      "reason": "Mandatory vulnerabilities were identified in project dependencies and must be remediated before deployment.",
+      "requirements": "Upgrade vulnerable dependencies to minimum patched versions and validate build/test outcomes after remediation. Addresses issues: CVE-2023-5072: Java: DoS Vulnerability in JSON-JAVA, CVE-2022-45688: json stack overflow vulnerability.",
+      "dependencies": [
+        "001-transform-credentials-to-keyvault"
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "deployment",
+      "id": "003-deployment-azure-container-apps",
+      "description": "Containerize and deploy the KYC service to Azure Container Apps.",
+      "reason": "A cloud deployment target is required to complete modernization to Azure.",
+      "requirements": "Deploy the modernized application to Azure Container Apps using existing/new resources and managed identity authentication.",
+      "dependencies": [
+        "002-security-cve-remediation"
+      ],
+      "targetAzureService": "Azure Container Apps",
+      "resourceStatus": "existing",
+      "deploymentTool": "bicep",
+      "skills": [
+        {
+          "name": "azcli-containerapp-deploy",
+          "location": "builtin"
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "planName": "modernization-plan",
+    "projectName": "mnm-ZavaKYCService",
+    "language": "java",
+    "createdAt": "2026-05-29T00:36:05Z",
+    "version": "1.0"
+  }
+}
