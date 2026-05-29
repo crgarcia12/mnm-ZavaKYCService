@@ -1,0 +1,83 @@
+{
+  "$schema": "https://aka.ms/appcat/report-schema",
+  "metadata": {
+    "analysisStartTime": "2026-05-29T03:17:31Z",
+    "analysisEndTime": "2026-05-29T03:30:00Z",
+    "sourceTechnology": "Java",
+    "toolVersion": "manual-assessment",
+    "targetIds": [
+      "aks"
+    ],
+    "targetDisplayNames": [
+      "Azure Kubernetes Service"
+    ]
+  },
+  "rules": {
+    "java-servlet-container-upgrade": {
+      "name": "Legacy servlet container dependency",
+      "description": "Application is packaged as WAR for external servlet container deployment.",
+      "category": "Cloud readiness",
+      "severity": "potential",
+      "effort": 6,
+      "labels": [
+        "domain=cloud-readiness",
+        "java-upgrade"
+      ]
+    },
+    "hardcoded-config-values": {
+      "name": "Configuration values embedded in properties",
+      "description": "Default credentials and host settings are present in bundled properties file.",
+      "category": "Cloud readiness",
+      "severity": "potential",
+      "effort": 4,
+      "labels": [
+        "domain=cloud-readiness"
+      ]
+    }
+  },
+  "projects": [
+    {
+      "name": "mnm-ZavaKYCService",
+      "properties": {
+        "repo": "mnm-ZavaKYCService",
+        "appName": "ZavaKYCService",
+        "languages": [
+          "Java"
+        ],
+        "frameworks": [
+          "Servlet 4.0",
+          "JSP"
+        ],
+        "tools": [
+          "Gradle"
+        ]
+      },
+      "incidents": [
+        {
+          "ruleId": "java-servlet-container-upgrade",
+          "description": "WAR packaging and web.xml indicate dependency on external servlet container runtime.",
+          "location": "build.gradle",
+          "targets": {
+            "aks": {
+              "effort": 6
+            }
+          },
+          "line": 2
+        },
+        {
+          "ruleId": "hardcoded-config-values",
+          "description": "kyc.properties includes database defaults including password placeholder.",
+          "location": "src/main/resources/kyc.properties",
+          "targets": {
+            "aks": {
+              "effort": 4
+            }
+          },
+          "line": 1
+        }
+      ]
+    }
+  ],
+  "security": [],
+  "rearchitect": []
+}
