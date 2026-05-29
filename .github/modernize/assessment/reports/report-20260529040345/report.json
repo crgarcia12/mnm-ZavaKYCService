@@ -1,0 +1,86 @@
+{
+  "metadata": {
+    "analysisStartTime": "2026-05-29T04:03:45Z",
+    "analysisEndTime": "2026-05-29T04:04:30Z"
+  },
+  "rules": {
+    "JAVA-BUILD-001": {
+      "title": "Gradle compatibility configuration requires modernization",
+      "description": "The current Gradle build script fails with the available Gradle runtime and requires compatibility updates for migration readiness.",
+      "severity": "potential",
+      "effort": 3,
+      "labels": [
+        "domain=cloud-readiness"
+      ]
+    }
+  },
+  "projects": [
+    {
+      "properties": {
+        "repo": "mnm-ZavaKYCService",
+        "appName": "ZavaKYCService",
+        "languages": [
+          "Java"
+        ],
+        "frameworks": [
+          "Java Servlet"
+        ],
+        "tools": [
+          "Gradle"
+        ]
+      },
+      "incidents": [
+        {
+          "ruleId": "JAVA-BUILD-001",
+          "location": "build.gradle",
+          "line": 7,
+          "message": "sourceCompatibility setting is incompatible with the current Gradle runtime behavior."
+        }
+      ]
+    }
+  ],
+  "security": [
+    {
+      "id": "CWE-259",
+      "title": "Hard-coded database password in application properties",
+      "category": "credentials-secrets",
+      "severity": "high",
+      "description": "Repository includes a default SQL Server password in runtime configuration.",
+      "evidence": {
+        "files": [
+          "src/main/resources/kyc.properties:5"
+        ],
+        "explanation": "db.******"
+      },
+      "storyPoint": 3
+    },
+    {
+      "id": "CWE-798",
+      "title": "Hard-coded credential pair in default configuration",
+      "category": "credentials-secrets",
+      "severity": "high",
+      "description": "Default database username and password are committed and can be used if environment overrides are absent.",
+      "evidence": {
+        "files": [
+          "src/main/resources/kyc.properties:4"
+        ],
+        "explanation": "db.user=sa and db.******"
+      },
+      "storyPoint": 3
+    },
+    {
+      "id": "CWE-775",
+      "title": "Input stream may not be closed on exceptional path",
+      "category": "code-quality",
+      "severity": "low",
+      "description": "The configuration stream loaded in KycConfig static initializer is manually closed and may remain open if loading throws before close is reached.",
+      "evidence": {
+        "files": [
+          "src/main/java/com/zavabank/kycservice/KycConfig.java:12"
+        ],
+        "explanation": "InputStream inputStream = KycConfig.class.getClassLoader().getResourceAsStream(\"kyc.properties\"); ... PROPERTIES.load(inputStream); ... inputStream.close();"
+      },
+      "storyPoint": 3
+    }
+  ]
+}
